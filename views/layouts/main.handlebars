@@ -17,7 +17,14 @@
         </div>
         <ul class="nav navbar-nav">
         <li><a href="/">Home</a></li>
-        <li><a href="/new">New User</a></li>
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+        {{#if user}}
+        <li><a href="/logout"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
+        {{else}}
+         <li><a href="/new"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
+         <li><a href="/signin"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+        {{/if}}
         </ul>
     </div>
     </nav>

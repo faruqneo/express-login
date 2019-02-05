@@ -16,6 +16,10 @@ router.get('/', function(req, res){
     res.render('index')
 })
 
+router.get('/signin', function(req, res){
+    res.render('login')
+})
+
 router.get('/new', function(req, res){
     res.render('registration')
 })
@@ -114,6 +118,9 @@ router.route('/reg')
     res.render('restricted')
 })
 
-
+router.get('/logout', function(req, res){
+    req.logout();
+    res.redirect('/')
+})
 
 module.exports = router
