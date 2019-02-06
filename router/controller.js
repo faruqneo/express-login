@@ -31,7 +31,7 @@ router.get('/', function(req, res){
 })
 
 //route to index page
-router.post('/newarticles', function(req, res){
+router.post('/newarticles', ensureAthenticated, function(req, res){
     //  res.render('index')
     req.checkBody('title', 'Title is missing').notEmpty()
     req.checkBody('author', 'Author is missing').notEmpty()
@@ -66,7 +66,7 @@ router.post('/newarticles', function(req, res){
  })
 
 //articles view
-router.get('/article/view/:id', function(req, res){
+router.get('/article/view/:id',  function(req, res){
     Article.findById(req.params.id, function(err, articles){
         res.render('view',{
             article: articles
@@ -75,7 +75,7 @@ router.get('/article/view/:id', function(req, res){
 })
 
 //articles updates
-router.get('/article/update/:id', function(req, res){
+router.get('/article/update/:id', ensureAthenticated, function(req, res){
     Article.findById(req.params.id, function(err, articles){
         res.render('details',{
             article: articles
@@ -84,7 +84,7 @@ router.get('/article/update/:id', function(req, res){
 })
 
 //articles deleted
-router.get('/article/delete/:id', function(req, res){
+router.get('/article/delete/:id', ensureAthenticated, function(req, res){
     let id = {_id: req.params.id}
     Article.deleteOne(id, function(err)
     {
@@ -100,11 +100,11 @@ router.get('/article/delete/:id', function(req, res){
 })
 
 //router to update
-router.post('/update/articles/:id', function(req, res){
+router.post('/update/articles/:id', ensureAthenticated, function(req, res){
         let article = req.body;
 
         let id = {_id:req.params.id}
-        
+
         Article.updateOne(id, article,function(err){
             if(err)
             {
@@ -118,7 +118,7 @@ router.post('/update/articles/:id', function(req, res){
 })
 
 //route to add articles
-router.get('/add/articles', function(req, res){
+router.get('/add/articles', ensureAthenticated, function(req, res){
     res.render('add')
 })
 
@@ -220,14 +220,27 @@ router.route('/reg')
 
 
 })
+
 //check for put
 .put(function(res, res){
     res.render('restricted')
 })
 
-router.get('/logout', function(req, res){
+router.get('/logout', ensureAthenticated, function(req, res){
     req.logout();
+    req.session.destroy();
     res.redirect('/')
 })
+
+//Access Control
+function ensureAthenticated(req, res, next){
+    if(req.isAuthenticated){
+        return next();
+    }
+    else
+    {
+        res.redirect('/')
+    }
+}
 
 module.exports = router
