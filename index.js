@@ -3,7 +3,7 @@ const exphbs = require('express-handlebars')
 const mongoose = require('mongoose')
 const session = require('express-session')
 const bodyParser = require('body-parser')
-const login = require('./router/login')
+const controller = require('./router/controller')
 const expressValidator = require('express-validator')
 const config = require('./config/database')
 const passport = require('passport')
@@ -75,7 +75,7 @@ app.get('*', function(req, res, next){
 })
 
 //Home Router
-app.use('/', login)
+app.use('/', controller)
 
 
 //server running

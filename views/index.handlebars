@@ -1,7 +1,7 @@
 
-
+<h1>Articles List</h1>
 <ul class="list-group">
-  <li class="list-group-item">First item</li>
-  <li class="list-group-item">Second item</li>
-  <li class="list-group-item">Third item</li>
+  {{#each articles}}
+  <a href="/article/view/{{id}}" class="list-group-item">{{title}}</a>
+  {{/each}}
 </ul>

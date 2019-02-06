@@ -5,6 +5,7 @@ const passport = require('passport')
 
 //connected database model
 let Login = require('../models/login')
+let Article = require('../models/article')
 
 // middleware that is specific to this router
 router.use(function timeLog (req, res, next) {
@@ -12,8 +13,113 @@ router.use(function timeLog (req, res, next) {
     next()
 })
 
+//route to index page
 router.get('/', function(req, res){
-    res.render('index')
+   //  res.render('index')
+   Article.find({}, function(err, articles){
+       if(err)
+       {
+           console.log(err)
+       }
+       else
+       {
+           res.render('index',{
+               articles: articles
+           })
+       }
+   })
+})
+
+//route to index page
+router.post('/newarticles', function(req, res){
+    //  res.render('index')
+    req.checkBody('title', 'Title is missing').notEmpty()
+    req.checkBody('author', 'Author is missing').notEmpty()
+    req.checkBody('body', 'Body is missing').notEmpty()
+
+    let errors = req.validationErrors()
+
+    if(errors)
+    {
+        res.render('add',{
+            errors: errors
+        })
+    }
+    else
+    {
+        let article = new Article()
+        article.title = req.body.title
+        article.author = req.body.author
+        article.body = req.body.body
+
+        article.save(function(err){
+            if(err)
+            {
+                console.log(err)
+            }
+            else
+            {
+                res.redirect('/')
+            }
+        })
+    }
+ })
+
+//articles view
+router.get('/article/view/:id', function(req, res){
+    Article.findById(req.params.id, function(err, articles){
+        res.render('view',{
+            article: articles
+        })
+    })
+})
+
+//articles updates
+router.get('/article/update/:id', function(req, res){
+    Article.findById(req.params.id, function(err, articles){
+        res.render('details',{
+            article: articles
+        })
+    })
+})
+
+//articles deleted
+router.get('/article/delete/:id', function(req, res){
+    let id = {_id: req.params.id}
+    Article.deleteOne(id, function(err)
+    {
+        if(err)
+        {
+            console.log(err)
+        }
+        else
+        {
+            res.redirect('/')
+        }
+    })
+})
+
+//router to update
+router.post('/update/articles/:id', function(req, res){
+        let article = req.body;
+
+        let id = {_id:req.params.id}
+        
+        Article.updateOne(id, article,function(err){
+            if(err)
+            {
+                console.log(err)
+            }
+            else
+            {
+                res.redirect('/')
+            }
+        })
+})
+
+//route to add articles
+router.get('/add/articles', function(req, res){
+    res.render('add')
 })
 
 router.get('/signin', function(req, res){
@@ -26,6 +132,7 @@ router.get('/new', function(req, res){
 
 router.get('/success', function(req, res){
     res.render('success')
+   // console.log(res)
 })
 
 //login
@@ -39,7 +146,7 @@ router.route('/login')
         passport.authenticate('local',{
             successRedirect: '/success',
             failureRedirect: '/',
-            failureFlash: 'false'
+            failureFlash: 'true'
         })(req, res, next);
     })
 //check for put
